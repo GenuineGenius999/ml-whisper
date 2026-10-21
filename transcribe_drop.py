@@ -235,8 +235,33 @@ def _convert_flac_to_mp3(source: Path, bitrate: str, temp_dir: Path) -> Path:
     finally:
         handle.close()
 
+    cmd = [
+        ffmpeg,
+        "-y",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-i",
+        str(source),
+        "-vn",
+        "-map",
+        "0:a:0",
+        "-acodec",
+        "libmp3lame",
+        "-b:a",
+        str(bitrate),
+        str(target),
+    ]
 
-
+    start = time.monotonic()
+    try:
+        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    except subprocess.CalledProcessError as exc:
+        try:
+            target.unlink()
+        except FileNotFoundError:
+            pass
+        raise RuntimeError(exc.stderr.strip() or "ffmpeg conversion failed") from exc
 
     elapsed = time.monotonic() - start
     try:
