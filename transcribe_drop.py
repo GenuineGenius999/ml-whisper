@@ -235,23 +235,7 @@ def _convert_flac_to_mp3(source: Path, bitrate: str, temp_dir: Path) -> Path:
     finally:
         handle.close()
 
-    cmd = [
-        ffmpeg,
-        "-y",
-        "-hide_banner",
-        "-loglevel",
-        "error",
-        "-i",
-        str(source),
-        "-vn",
-        "-map",
-        "0:a:0",
-        "-acodec",
-        "libmp3lame",
-        "-b:a",
-        str(bitrate),
-        str(target),
-    ]
+
 
     start = time.monotonic()
     try:
